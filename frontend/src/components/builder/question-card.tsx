@@ -8,7 +8,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { QUESTION_TYPES, getQuestionTypeConfig } from "@/lib/question-types";
 import { useUpdateQuestion, useDeleteQuestion, useAddQuestion } from "@/hooks/useBuilder";
 import { toast } from "sonner";
@@ -23,6 +23,7 @@ interface QuestionCardProps {
 export function QuestionCard({ question, formId, index }: QuestionCardProps) {
   const [title, setTitle] = useState(question.title);
   const [description, setDescription] = useState(question.description || "");
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   
   const updateQuestion = useUpdateQuestion(formId);
   const deleteQuestion = useDeleteQuestion(formId);
@@ -153,9 +154,32 @@ export function QuestionCard({ question, formId, index }: QuestionCardProps) {
             <button onClick={handleDuplicate} className="p-1.5 text-muted-foreground hover:text-foreground hover:bg-muted rounded-md cursor-pointer" title="Duplicate">
               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
             </button>
-            <button onClick={handleDelete} className="p-1.5 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-md cursor-pointer" title="Delete">
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
-            </button>
+            <div className="relative">
+              <button onClick={() => setShowDeleteConfirm(true)} className="p-1.5 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-md cursor-pointer" title="Delete">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+              </button>
+              
+              <AnimatePresence>
+                {showDeleteConfirm && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.95, y: 5 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.95, y: 5 }}
+                    className="absolute right-0 top-full mt-2 w-48 bg-background border shadow-xl rounded-lg p-3 z-50"
+                  >
+                    <p className="text-sm font-medium mb-3">Delete question?</p>
+                    <div className="flex gap-2">
+                      <button onClick={() => setShowDeleteConfirm(false)} className="flex-1 py-1.5 px-2 bg-muted text-muted-foreground rounded text-xs font-medium hover:bg-muted/80 transition-colors">
+                        Cancel
+                      </button>
+                      <button onClick={handleDelete} className="flex-1 py-1.5 px-2 bg-destructive text-destructive-foreground rounded text-xs font-medium hover:bg-destructive/90 transition-colors">
+                        Delete
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           </div>
         </div>
 

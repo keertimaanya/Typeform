@@ -166,18 +166,7 @@ export function Sidebar() {
           </div>
         </div>
 
-        {/* Footer */}
-        <div className="p-4 border-t border-border mt-auto">
-          <div className="text-xs font-medium text-slate-500 mb-2">Responses collected</div>
-          <div className="flex items-end justify-between mb-2">
-            <div className="text-sm font-semibold text-slate-800">
-              0 <span className="text-slate-400 font-normal">/ ∞</span>
-            </div>
-          </div>
-          <div className="w-full h-1 bg-slate-100 rounded-full mb-3">
-            <div className="w-0 h-full bg-emerald-500 rounded-full" />
-          </div>
-        </div>
+
       </div>
 
       {/* ── Search Modal ── */}

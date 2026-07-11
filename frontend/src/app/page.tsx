@@ -9,15 +9,14 @@ export default function Home() {
 
       {/* Header */}
       <header className="flex items-center justify-between px-6 py-4 sm:px-10 sm:py-6 relative z-10">
-        <div className="flex items-center gap-2">
-          {/* Mock Logo */}
-          <div className="flex gap-[2px]">
-            <div className="w-2.5 h-5 bg-white rounded-l-full" />
-            <div className="w-4 h-5 bg-white rounded-r-full" />
+        <div className="flex items-center gap-1.5">
+          {/* Logo Mark */}
+          <div className="flex gap-1 items-center">
+            <div className="w-2.5 h-5 bg-white rounded-full" />
+            <div className="w-5 h-5 bg-white rounded-md" />
           </div>
-          <span className="text-xl font-medium tracking-tight">Typeform</span>
+          <span className="text-[1.35rem] font-bold tracking-tight ml-1">Typeform</span>
         </div>
-        {/* Auth options removed as requested */}
       </header>
 
       {/* Main Content */}
@@ -45,24 +44,6 @@ export default function Home() {
           </Link>
         </div>
       </main>
-
-      {/* Bottom Mock Cards */}
-      <div className="w-full flex gap-6 px-6 pb-0 pt-20 overflow-hidden opacity-80 relative z-10 justify-center translate-y-12">
-        <div className="w-80 h-64 bg-gradient-to-br from-gray-700 to-gray-800 rounded-t-3xl border border-gray-600/50 p-6 flex flex-col justify-end relative overflow-hidden">
-          <div className="absolute inset-0 bg-fuchsia-500/10" />
-          <p className="text-sm font-medium relative z-10">Build a lead generation form for my business FitCo...</p>
-        </div>
-        <div className="w-[450px] h-72 bg-[#333333] rounded-t-3xl border border-gray-600/50 p-2 shadow-2xl relative">
-          <div className="w-full h-full bg-[#252525] rounded-t-2xl overflow-hidden relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-amber-600/40 to-orange-600/40" />
-            <div className="absolute bottom-0 w-full h-3/4 bg-white rounded-t-2xl p-4 shadow-xl translate-y-8" />
-          </div>
-        </div>
-        <div className="w-80 h-64 bg-gradient-to-br from-gray-700 to-gray-800 rounded-t-3xl border border-gray-600/50 p-6 flex flex-col justify-end relative overflow-hidden hidden lg:flex">
-          <div className="absolute inset-0 bg-violet-500/10" />
-          <p className="text-sm font-medium relative z-10">Create an interactive quiz...</p>
-        </div>
-      </div>
     </div>
   );
 }

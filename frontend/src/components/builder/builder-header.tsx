@@ -12,6 +12,7 @@ import { useUpdateForm } from "@/hooks/useForms";
 import type { FormDetail } from "@/types/form";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
+import { PreviewModal } from "@/components/builder/preview-modal";
 
 interface BuilderHeaderProps {
   form: FormDetail;
@@ -21,6 +22,7 @@ export function BuilderHeader({ form }: BuilderHeaderProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState(form.title);
   const [showPublishModal, setShowPublishModal] = useState(false);
+  const [showPreviewModal, setShowPreviewModal] = useState(false);
   
   const inputRef = useRef<HTMLInputElement>(null);
   const updateForm = useUpdateForm();
@@ -105,25 +107,33 @@ export function BuilderHeader({ form }: BuilderHeaderProps) {
         </div>
 
         {/* Center Tabs */}
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center p-1 bg-muted/50 rounded-lg border border-border/40">
-          <Link 
-            href={`/builder/${form.id}`} 
-            className={`px-4 py-1 text-sm font-medium rounded-md transition-colors ${!isResults ? "bg-background text-foreground shadow-sm" : "hover:bg-background/80 hover:text-foreground text-muted-foreground"}`}
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center gap-1">
+          <div className="flex items-center p-1 bg-muted/50 rounded-lg border border-border/40">
+            <Link 
+              href={`/builder/${form.id}`} 
+              className={`px-4 py-1 text-sm font-medium rounded-md transition-colors ${!isResults ? "bg-background text-foreground shadow-sm" : "hover:bg-background/80 hover:text-foreground text-muted-foreground"}`}
+            >
+              Create
+            </Link>
+            <button onClick={() => toast("Design themes coming soon!", { icon: "🎨" })} className="px-4 py-1 text-sm font-medium rounded-md hover:bg-background/80 hover:text-foreground text-muted-foreground transition-colors">
+              Design
+            </button>
+            <Link 
+              href={`/builder/${form.id}/results`} 
+              className={`px-4 py-1 text-sm font-medium rounded-md transition-colors ${isResults ? "bg-background text-foreground shadow-sm" : "hover:bg-background/80 hover:text-foreground text-muted-foreground"}`}
+            >
+              Results
+            </Link>
+          </div>
+          
+          {/* Play button */}
+          <button 
+            onClick={() => setShowPreviewModal(true)} 
+            className="h-8 px-3 ml-2 bg-white border border-slate-200 rounded-md hover:bg-slate-50 transition-colors flex items-center justify-center shadow-sm cursor-pointer"
+            title="Preview"
           >
-            Create
-          </Link>
-          <button onClick={() => toast("Design themes coming soon!", { icon: "🎨" })} className="px-4 py-1 text-sm font-medium rounded-md hover:bg-background/80 hover:text-foreground text-muted-foreground transition-colors">
-            Design
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-slate-700"><polygon points="5 3 19 12 5 21 5 3"/></svg>
           </button>
-          <button onClick={() => toast("Advanced settings coming soon!", { icon: "⚙️" })} className="px-4 py-1 text-sm font-medium rounded-md hover:bg-background/80 hover:text-foreground text-muted-foreground transition-colors">
-            Settings
-          </button>
-          <Link 
-            href={`/builder/${form.id}/results`} 
-            className={`px-4 py-1 text-sm font-medium rounded-md transition-colors ${isResults ? "bg-background text-foreground shadow-sm" : "hover:bg-background/80 hover:text-foreground text-muted-foreground"}`}
-          >
-            Results
-          </Link>
         </div>
 
         {/* Right Actions */}
@@ -183,6 +193,8 @@ export function BuilderHeader({ form }: BuilderHeaderProps) {
           </div>
         )}
       </AnimatePresence>
+
+      <PreviewModal isOpen={showPreviewModal} onClose={() => setShowPreviewModal(false)} form={form} />
     </>
   );
 }

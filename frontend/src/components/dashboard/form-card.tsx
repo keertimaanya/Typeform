@@ -106,38 +106,51 @@ export function FormCard({ form, index }: FormCardProps) {
   return (
     <>
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3, delay: index * 0.05 }}
-        whileHover={{ y: -4, transition: { duration: 0.2 } }}
-        className="group relative rounded-2xl border border-border/60 bg-card p-5 shadow-sm hover:shadow-xl hover:border-border transition-all duration-300"
+        transition={{ duration: 0.2, delay: index * 0.05 }}
+        whileHover={{ backgroundColor: "rgba(0,0,0,0.02)" }}
+        className="group relative flex items-center px-4 py-3 bg-white border-b border-border/50 transition-colors"
       >
-        {/* Status indicator bar at top */}
-        <div
-          className={`absolute top-0 left-4 right-4 h-0.5 rounded-b-full transition-colors ${
-            isPublished
-              ? "bg-gradient-to-r from-emerald-400 to-teal-400"
-              : "bg-gradient-to-r from-amber-300 to-orange-300"
-          }`}
-        />
+        {/* Left side: Icon + Title */}
+        <div className="flex items-center flex-1 gap-4">
+          <Link href={`/builder/${form.id}`} className="flex items-center gap-4 flex-1">
+            <div className="h-10 w-10 rounded-lg bg-rose-100 flex items-center justify-center shrink-0">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-rose-500"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>
+            </div>
+            <div>
+              <h3 className="font-medium text-sm text-slate-900 group-hover:text-primary transition-colors">
+                {form.title}
+              </h3>
+            </div>
+          </Link>
+        </div>
 
-        {/* Header: Badge + Actions */}
-        <div className="flex items-start justify-between mb-4">
-          <Badge
-            variant={isPublished ? "default" : "secondary"}
-            className={`text-xs font-medium px-2.5 py-0.5 rounded-full ${
-              isPublished
-                ? "bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950 dark:text-emerald-300 dark:border-emerald-800"
-                : "bg-amber-50 text-amber-700 border border-amber-200 dark:bg-amber-950 dark:text-amber-300 dark:border-amber-800"
-            }`}
-          >
-            {isPublished ? "Published" : "Draft"}
-          </Badge>
+        {/* Responses */}
+        <div className="w-24 text-center text-sm text-slate-500">
+          -
+        </div>
 
-          {/* Actions dropdown */}
+        {/* Completed */}
+        <div className="w-24 text-center text-sm text-slate-500">
+          -
+        </div>
+
+        {/* Updated */}
+        <div className="w-32 text-right text-sm text-slate-500">
+          {updatedDate}
+        </div>
+
+        {/* Integrations */}
+        <div className="w-24 flex items-center justify-center gap-1 text-slate-400">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="8" height="8" x="2" y="2" rx="2"/><rect width="8" height="8" x="14" y="2" rx="2"/><rect width="8" height="8" x="2" y="14" rx="2"/><path d="M14 14h8v8h-8z"/></svg>
+        </div>
+
+        {/* Actions Dropdown */}
+        <div className="w-12 flex justify-end">
           <DropdownMenu>
-            <DropdownMenuTrigger className="h-8 w-8 flex items-center justify-center rounded-lg opacity-0 group-hover:opacity-100 hover:bg-muted transition-all duration-200 cursor-pointer">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+            <DropdownMenuTrigger className="h-8 w-8 flex items-center justify-center rounded-md opacity-0 group-hover:opacity-100 hover:bg-slate-100 transition-all cursor-pointer text-slate-500">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48">
               <DropdownMenuItem onClick={() => setShowRename(true)} className="cursor-pointer">
@@ -171,40 +184,6 @@ export function FormCard({ form, index }: FormCardProps) {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-        </div>
-
-        {/* Clickable area → opens builder */}
-        <Link href={`/builder/${form.id}`} className="block">
-          {/* Form icon */}
-          <div className="mb-3">
-            <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-violet-100 to-fuchsia-100 dark:from-violet-900/30 dark:to-fuchsia-900/30 flex items-center justify-center">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-violet-600 dark:text-violet-400"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>
-            </div>
-          </div>
-
-          {/* Title */}
-          <h3 className="font-semibold text-base text-foreground mb-1 line-clamp-1">
-            {form.title}
-          </h3>
-
-          {/* Description */}
-          {form.description && (
-            <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
-              {form.description}
-            </p>
-          )}
-        </Link>
-
-        {/* Footer: Meta info */}
-        <div className="flex items-center gap-4 mt-4 pt-3 border-t border-border/50 text-xs text-muted-foreground">
-          <span className="flex items-center gap-1.5">
-            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-            0 responses
-          </span>
-          <span className="flex items-center gap-1.5">
-            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-            {updatedDate}
-          </span>
         </div>
       </motion.div>
 

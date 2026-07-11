@@ -63,7 +63,7 @@ export default function DashboardPage() {
     <div className="flex flex-col h-full bg-white">
       {/* Tabs Header */}
       <div className="flex items-center px-6 border-b border-border pt-2 gap-6">
-        {["Forms", "Contacts", "Automations"].map((tab) => (
+        {["Forms"].map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}

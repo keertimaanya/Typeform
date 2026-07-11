@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useAddQuestion, useUpdateQuestionOrder } from "@/hooks/useBuilder";
+import { useAddQuestion, useReorderQuestions } from "@/hooks/useBuilder";
 import { QUESTION_TYPES, getQuestionTypeConfig } from "@/lib/question-types";
 import {
   DndContext,
@@ -120,7 +120,7 @@ function SortableNavItem({
 
 export function BuilderSidebar({ formId, questions, activeQuestionId, setActiveQuestionId }: BuilderSidebarProps) {
   const addQuestion = useAddQuestion(formId);
-  const updateOrder = useUpdateQuestionOrder(formId);
+  const updateOrder = useReorderQuestions(formId);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
   const sensors = useSensors(
@@ -134,7 +134,7 @@ export function BuilderSidebar({ formId, questions, activeQuestionId, setActiveQ
       const oldIndex = questions.findIndex((q) => q.id === active.id);
       const newIndex = questions.findIndex((q) => q.id === over.id);
       const newQuestions = arrayMove(questions, oldIndex, newIndex);
-      updateOrder.mutate(newQuestions.map((q) => q.id));
+      updateOrder.mutate(newQuestions.map((q, index) => ({ question_id: q.id, position: index })));
     }
   };
 

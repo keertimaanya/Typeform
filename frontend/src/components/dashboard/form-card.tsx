@@ -8,6 +8,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import {
   DropdownMenu,
@@ -172,24 +173,27 @@ export function FormCard({ form, index }: FormCardProps) {
           </DropdownMenu>
         </div>
 
-        {/* Form icon */}
-        <div className="mb-3">
-          <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-violet-100 to-fuchsia-100 dark:from-violet-900/30 dark:to-fuchsia-900/30 flex items-center justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-violet-600 dark:text-violet-400"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>
+        {/* Clickable area → opens builder */}
+        <Link href={`/builder/${form.id}`} className="block">
+          {/* Form icon */}
+          <div className="mb-3">
+            <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-violet-100 to-fuchsia-100 dark:from-violet-900/30 dark:to-fuchsia-900/30 flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-violet-600 dark:text-violet-400"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>
+            </div>
           </div>
-        </div>
 
-        {/* Title */}
-        <h3 className="font-semibold text-base text-foreground mb-1 line-clamp-1">
-          {form.title}
-        </h3>
+          {/* Title */}
+          <h3 className="font-semibold text-base text-foreground mb-1 line-clamp-1">
+            {form.title}
+          </h3>
 
-        {/* Description */}
-        {form.description && (
-          <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
-            {form.description}
-          </p>
-        )}
+          {/* Description */}
+          {form.description && (
+            <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
+              {form.description}
+            </p>
+          )}
+        </Link>
 
         {/* Footer: Meta info */}
         <div className="flex items-center gap-4 mt-4 pt-3 border-t border-border/50 text-xs text-muted-foreground">

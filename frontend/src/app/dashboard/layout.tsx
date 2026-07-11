@@ -45,17 +45,7 @@ export default function DashboardLayout({
           </div>
         </header>
 
-        {/* Promo Banner */}
-        <div className="px-6 pt-4 pb-0">
-          <div className="w-full bg-emerald-50 border border-emerald-100 rounded-lg p-3 flex items-center justify-center gap-3">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-emerald-600"><path d="m6 14 1.45-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.55 6a2 2 0 0 1-1.94 1.5H4a2 2 0 0 1-2-2V5c0-1.1.9-2 2-2h3.93a2 2 0 0 1 1.66.9l.82 1.2a2 2 0 0 0 1.66.9H18a2 2 0 0 1 2 2v2"/></svg>
-            <span className="text-sm text-slate-800">You can collect <strong>10 form responses</strong> this month for free.</span>
-            <button className="text-xs bg-emerald-700 text-white px-3 py-1.5 rounded hover:bg-emerald-800 transition-colors font-medium">Get more responses</button>
-            <button className="ml-auto text-emerald-600 hover:text-emerald-800">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-            </button>
-          </div>
-        </div>
+
 
         {/* Main Content Area */}
         <main className="flex-1 overflow-y-auto">

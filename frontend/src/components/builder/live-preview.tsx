@@ -70,7 +70,11 @@ export function LivePreview({ questions, formTitle }: LivePreviewProps) {
 
             {/* Input preview based on type */}
             <div className="mt-8 ml-9">
-              {renderInputPreview(question, config?.type || question.type)}
+              {renderInputPreview(question, config?.type || question.type, () => {
+                if (currentIndex < questions.length - 1) {
+                  setCurrentIndex(currentIndex + 1);
+                }
+              })}
             </div>
           </motion.div>
         </AnimatePresence>
@@ -95,7 +99,7 @@ export function LivePreview({ questions, formTitle }: LivePreviewProps) {
 }
 
 /** Render a placeholder input based on question type */
-function renderInputPreview(question: Question, type: string) {
+function renderInputPreview(question: Question, type: string, onNext: () => void) {
   switch (type) {
     case "text":
     case "email":
@@ -119,6 +123,7 @@ function renderInputPreview(question: Question, type: string) {
           {choices.map((choice: string, i: number) => (
             <div
               key={i}
+              onClick={onNext}
               className="flex items-center gap-4 px-4 py-3 rounded-lg border border-primary/20 hover:bg-primary/5 transition-all cursor-pointer"
             >
               <div className="h-7 w-7 rounded-md border border-primary/30 flex items-center justify-center text-sm font-semibold text-primary/70 bg-primary/5">
@@ -133,11 +138,11 @@ function renderInputPreview(question: Question, type: string) {
     case "yes_no":
       return (
         <div className="flex gap-4">
-          <button className="flex-1 py-4 rounded-lg border border-primary/20 hover:bg-primary/5 transition-all text-xl font-light cursor-pointer flex items-center justify-center gap-3">
+          <button onClick={onNext} className="flex-1 py-4 rounded-lg border border-primary/20 hover:bg-primary/5 transition-all text-xl font-light cursor-pointer flex items-center justify-center gap-3">
             <span className="h-6 w-6 rounded-md border border-primary/30 flex items-center justify-center text-xs font-semibold text-primary/70 bg-primary/5">Y</span>
             Yes
           </button>
-          <button className="flex-1 py-4 rounded-lg border border-primary/20 hover:bg-primary/5 transition-all text-xl font-light cursor-pointer flex items-center justify-center gap-3">
+          <button onClick={onNext} className="flex-1 py-4 rounded-lg border border-primary/20 hover:bg-primary/5 transition-all text-xl font-light cursor-pointer flex items-center justify-center gap-3">
             <span className="h-6 w-6 rounded-md border border-primary/30 flex items-center justify-center text-xs font-semibold text-primary/70 bg-primary/5">N</span>
             No
           </button>
@@ -150,6 +155,7 @@ function renderInputPreview(question: Question, type: string) {
           {Array.from({ length: max }, (_, i) => (
             <button
               key={i}
+              onClick={onNext}
               className="h-14 w-12 rounded-lg border border-primary/20 hover:bg-primary/5 transition-all flex items-center justify-center text-xl font-light cursor-pointer"
             >
               {i + 1}

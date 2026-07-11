@@ -155,11 +155,9 @@ export function BuilderSidebar({ formId, questions, activeQuestionId, setActiveQ
     <aside className="w-72 bg-[#fafafa] border-r border-border/60 flex flex-col h-full overflow-hidden">
       <div className="p-4 border-b border-border/40 bg-white">
         <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
-          <PopoverTrigger asChild>
-            <button className="w-full flex items-center justify-center gap-2 bg-[#2d2d2d] hover:bg-[#1a1a1a] text-white px-4 py-2.5 rounded-xl font-medium transition-colors cursor-pointer shadow-sm">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
-              Add content
-            </button>
+          <PopoverTrigger className="w-full flex items-center justify-center gap-2 bg-[#2d2d2d] hover:bg-[#1a1a1a] text-white px-4 py-2.5 rounded-xl font-medium transition-colors cursor-pointer shadow-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+            Add content
           </PopoverTrigger>
           <PopoverContent side="right" align="start" className="w-[800px] p-6 rounded-2xl shadow-2xl border-border/50 overflow-hidden">
             <div className="flex flex-col h-full max-h-[600px]">

@@ -105,14 +105,30 @@ function renderInputPreview(question: Question, type: string, onNext: () => void
     case "email":
     case "number":
       return (
-        <div className="border-b-2 border-primary/20 pb-2">
-          <span className="text-2xl font-light text-muted-foreground/30">Type your answer here...</span>
+        <div className="space-y-6">
+          <div className="border-b-2 border-primary/20 pb-2">
+            <span className="text-2xl font-light text-muted-foreground/30">Type your answer here...</span>
+          </div>
+          <button 
+            onClick={onNext}
+            className="flex items-center gap-2 bg-primary text-primary-foreground px-6 py-2.5 rounded-md font-bold text-lg hover:bg-primary/90 transition-colors cursor-pointer"
+          >
+            OK <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+          </button>
         </div>
       );
     case "long_text":
       return (
-        <div className="border-b-2 border-primary/20 pb-8 pt-2">
-          <span className="text-2xl font-light text-muted-foreground/30">Type your answer here...</span>
+        <div className="space-y-6">
+          <div className="border-b-2 border-primary/20 pb-8 pt-2">
+            <span className="text-2xl font-light text-muted-foreground/30">Type your answer here...</span>
+          </div>
+          <button 
+            onClick={onNext}
+            className="flex items-center gap-2 bg-primary text-primary-foreground px-6 py-2.5 rounded-md font-bold text-lg hover:bg-primary/90 transition-colors cursor-pointer"
+          >
+            OK <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+          </button>
         </div>
       );
     case "multiple_choice":

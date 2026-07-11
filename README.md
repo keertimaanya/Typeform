@@ -2,7 +2,7 @@
 
 A full-stack Typeform clone featuring a clean, responsive form builder, a dynamic respondent flow, and real-time form analytics. Built with modern web technologies and a focus on delivering a seamless user experience.
 
-**Live Demo**: [https://vercel.com/keerti-s-projects1/typeform](https://vercel.com/keerti-s-projects1/typeform)
+**Live Demo**: [https://typeform-azure.vercel.app/](https://typeform-azure.vercel.app/)
 
 
 

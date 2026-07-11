@@ -10,12 +10,12 @@
 
 "use client";
 
-import { use } from "react";
+import { use, useState, useEffect } from "react";
 import { useFormDetail } from "@/hooks/useBuilder";
 import { BuilderHeader } from "@/components/builder/builder-header";
 import { BuilderSidebar } from "@/components/builder/builder-sidebar";
-import { QuestionList } from "@/components/builder/question-list";
-import { LivePreview } from "@/components/builder/live-preview";
+import { QuestionEditor } from "@/components/builder/question-editor";
+import { QuestionSettings } from "@/components/builder/question-settings";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -28,6 +28,18 @@ export default function BuilderPage({
   const { formId: formIdStr } = use(params);
   const formId = parseInt(formIdStr, 10);
   const { data: form, isLoading, isError, refetch } = useFormDetail(formId);
+
+  // State to track the currently selected question
+  const [activeQuestionId, setActiveQuestionId] = useState<number | null>(null);
+
+  // Automatically select the first question if none is selected
+  useEffect(() => {
+    if (form?.questions && form.questions.length > 0 && !activeQuestionId) {
+      setActiveQuestionId(form.questions[0].id);
+    } else if (form?.questions && form.questions.length === 0) {
+      setActiveQuestionId(null);
+    }
+  }, [form?.questions, activeQuestionId]);
 
   // Loading state
   if (isLoading) {
@@ -43,10 +55,8 @@ export default function BuilderPage({
               <Skeleton key={i} className="h-10 w-full rounded-xl" />
             ))}
           </div>
-          <div className="flex-1 p-8 space-y-3">
-            {Array.from({ length: 3 }).map((_, i) => (
-              <Skeleton key={i} className="h-32 w-full rounded-2xl" />
-            ))}
+          <div className="flex-1 p-8 space-y-3 flex items-center justify-center">
+             <Skeleton className="h-64 w-[600px] rounded-2xl" />
           </div>
           <div className="w-80 border-l border-border/60" />
         </div>
@@ -77,26 +87,48 @@ export default function BuilderPage({
     );
   }
 
+  const activeQuestion = form.questions.find((q) => q.id === activeQuestionId);
+
   return (
-    <div className="h-screen flex flex-col overflow-hidden">
+    <div className="h-screen flex flex-col overflow-hidden bg-background">
       {/* Header */}
       <BuilderHeader form={form} />
 
       {/* Three-panel layout */}
       <div className="flex-1 flex overflow-hidden">
-        {/* Left: Question type sidebar */}
-        <BuilderSidebar formId={formId} />
+        {/* Left: Pages list */}
+        <BuilderSidebar 
+          formId={formId} 
+          questions={form.questions}
+          activeQuestionId={activeQuestionId}
+          setActiveQuestionId={setActiveQuestionId}
+        />
 
-        {/* Center: Question editor */}
-        <main className="flex-1 overflow-y-auto p-6 bg-muted/20">
-          <div className="max-w-2xl mx-auto">
-            <QuestionList questions={form.questions} formId={formId} />
-          </div>
+        {/* Center: Live WYSIWYG editor */}
+        <main className="flex-1 overflow-y-auto p-6 bg-[#f3f3f5] relative flex flex-col items-center">
+          {activeQuestion ? (
+            <QuestionEditor 
+              question={activeQuestion} 
+              formId={formId}
+              index={form.questions.findIndex(q => q.id === activeQuestionId)}
+            />
+          ) : (
+            <div className="flex-1 flex flex-col items-center justify-center text-center text-muted-foreground">
+              <p>No questions yet.</p>
+              <p className="text-sm">Click "Add content" to start building your form.</p>
+            </div>
+          )}
         </main>
 
-        {/* Right: Live preview */}
-        <aside className="w-80 border-l border-border/60 bg-background hidden lg:flex flex-col">
-          <LivePreview questions={form.questions} formTitle={form.title} />
+        {/* Right: Settings panel */}
+        <aside className="w-80 border-l border-border/60 bg-white hidden lg:flex flex-col">
+          {activeQuestion ? (
+            <QuestionSettings question={activeQuestion} formId={formId} />
+          ) : (
+            <div className="p-6 text-center text-muted-foreground text-sm">
+              Select a question to view its settings
+            </div>
+          )}
         </aside>
       </div>
     </div>

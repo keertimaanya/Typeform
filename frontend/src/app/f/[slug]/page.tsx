@@ -286,7 +286,7 @@ function QuestionDisplay({ question, index, value, onChange, onEnter, isLast, is
 
       {/* Input area */}
       <div className={`ml-[42px] sm:ml-[48px] ${question.description ? 'mt-4' : 'mt-10'}`}>
-        {renderInput(question, value, onChange, inputRef)}
+        {renderInput(question, value, onChange, inputRef, onEnter)}
 
         {/* The Typeform OK Button */}
         {requiresOkButton && (
@@ -343,8 +343,14 @@ function renderInput(
   question: Question, 
   value: string, 
   onChange: (val: string) => void, 
-  inputRef: React.RefObject<HTMLInputElement | HTMLTextAreaElement | null>
+  inputRef: React.RefObject<HTMLInputElement | HTMLTextAreaElement | null>,
+  onEnter: () => void
 ) {
+  const handleChoiceClick = (val: string) => {
+    onChange(val);
+    setTimeout(onEnter, 400);
+  };
+
   switch (question.type) {
     case "text":
     case "email":
@@ -395,7 +401,7 @@ function renderInput(
             return (
               <button
                 key={i}
-                onClick={() => onChange(choice)}
+                onClick={() => handleChoiceClick(choice)}
                 className={`w-full text-left flex items-center gap-3 p-2 rounded-lg border transition-all cursor-pointer group ${
                   isSelected 
                     ? "bg-slate-100/80 border-slate-400" 
@@ -428,7 +434,7 @@ function renderInput(
             return (
               <button
                 key={opt}
-                onClick={() => onChange(opt)}
+                onClick={() => handleChoiceClick(opt)}
                 className={`w-full text-left flex items-center gap-3 p-3 rounded-lg border transition-all cursor-pointer group ${
                   isSelected 
                     ? "bg-slate-100/80 border-slate-400" 
@@ -461,7 +467,7 @@ function renderInput(
             return (
               <button
                 key={num}
-                onClick={() => onChange(num)}
+                onClick={() => handleChoiceClick(num)}
                 className={`h-14 w-12 rounded border transition-all flex items-center justify-center text-xl font-normal cursor-pointer ${
                   isSelected 
                     ? "bg-slate-800 text-white border-slate-800 shadow-sm" 

@@ -16,21 +16,18 @@ export default function PublicFormPage({
   const { data: form, isLoading, isError } = usePublicForm(slug);
   const submitResponse = useSubmitResponse(slug);
 
-  const [currentIndex, setCurrentIndex] = useState(-1); // -1 is the welcome screen
+  const [currentIndex, setCurrentIndex] = useState(-1);
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   // Global keydown listener
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Don't intercept if user is typing in a textarea or text input
       const target = e.target as HTMLElement;
       const isInput = target.tagName === "INPUT" || target.tagName === "TEXTAREA";
 
       if (e.key === "Enter" && !e.shiftKey) {
-        // Prevent default form submission if inside an input
         if (isInput) e.preventDefault();
-        
         handleNext();
       }
     };
@@ -42,7 +39,6 @@ export default function PublicFormPage({
   const handleNext = async () => {
     if (!form) return;
     
-    // Welcome screen -> first question
     if (currentIndex === -1) {
       if (form.questions.length > 0) setCurrentIndex(0);
       return;
@@ -50,21 +46,18 @@ export default function PublicFormPage({
 
     const currentQ = form.questions[currentIndex];
     
-    // Validation
     if (currentQ.required && !answers[currentQ.id]) {
-      toast.error("Please answer this question before moving on.");
+      toast.error("Please fill this in", { position: "bottom-center" });
       return;
     }
     if (currentQ.type === "email" && answers[currentQ.id] && !answers[currentQ.id].includes("@")) {
-      toast.error("Please enter a valid email address.");
+      toast.error("Hmm... that email doesn't look right", { position: "bottom-center" });
       return;
     }
 
-    // Advance or submit
     if (currentIndex < form.questions.length - 1) {
       setCurrentIndex((prev) => prev + 1);
     } else {
-      // Submit
       try {
         const payload = {
           answers: Object.entries(answers).map(([qId, val]) => ({
@@ -75,7 +68,7 @@ export default function PublicFormPage({
         await submitResponse.mutateAsync(payload);
         setIsSubmitted(true);
       } catch {
-        toast.error("Failed to submit response. Please try again.");
+        toast.error("Oops! Something went wrong.", { position: "bottom-center" });
       }
     }
   };
@@ -84,7 +77,7 @@ export default function PublicFormPage({
     if (currentIndex > 0) {
       setCurrentIndex((prev) => prev - 1);
     } else {
-      setCurrentIndex(-1); // Back to welcome screen
+      setCurrentIndex(-1);
     }
   };
 
@@ -93,27 +86,31 @@ export default function PublicFormPage({
   };
 
   if (isLoading) {
-    return <div className="h-screen w-full flex items-center justify-center bg-background"><div className="animate-pulse h-8 w-32 bg-muted rounded-full" /></div>;
+    return <div className="h-[100dvh] w-full bg-white flex items-center justify-center"><div className="animate-pulse h-2 w-32 bg-gray-200 rounded-full" /></div>;
   }
 
   if (isError || !form) {
     return (
-      <div className="h-screen w-full flex items-center justify-center bg-background text-center flex-col p-6">
-        <h1 className="text-4xl font-light mb-4">Form not found</h1>
-        <p className="text-muted-foreground text-lg mb-8">This form may be unpublished, deleted, or the link is incorrect.</p>
-        <Link href="/" className="px-6 py-3 bg-primary text-primary-foreground rounded-lg font-medium">Go home</Link>
+      <div className="h-[100dvh] w-full bg-white flex flex-col items-center justify-center p-6 text-slate-800">
+        <h1 className="text-3xl font-light mb-4">Form not found</h1>
+        <p className="text-slate-500 mb-8">This form may be unpublished or deleted.</p>
+        <Link href="/" className="px-6 py-3 bg-slate-800 text-white rounded font-medium">Go home</Link>
       </div>
     );
   }
 
   if (isSubmitted) {
     return (
-      <div className="h-screen w-full flex items-center justify-center bg-background text-center flex-col p-6">
-        <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="h-24 w-24 bg-primary text-primary-foreground rounded-full flex items-center justify-center mb-8 mx-auto">
-          <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
-        </motion.div>
-        <h1 className="text-5xl font-light mb-4">Thank you!</h1>
-        <p className="text-xl text-muted-foreground font-light">Your response has been recorded.</p>
+      <div className="h-[100dvh] w-full bg-white flex flex-col items-center justify-center p-6 text-slate-800 text-center">
+        <AnimatePresence>
+          <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ type: "spring", bounce: 0.5 }}>
+            <div className="h-20 w-20 bg-slate-800 text-white rounded-full flex items-center justify-center mb-8 mx-auto">
+              <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+            </div>
+            <h1 className="text-4xl md:text-5xl font-light mb-4 text-slate-800">Done!</h1>
+            <p className="text-xl text-slate-500 font-light">Your response has been recorded.</p>
+          </motion.div>
+        </AnimatePresence>
       </div>
     );
   }
@@ -121,55 +118,56 @@ export default function PublicFormPage({
   const progress = currentIndex === -1 ? 0 : ((currentIndex + 1) / form.questions.length) * 100;
 
   return (
-    <div className="h-screen w-full bg-background flex flex-col overflow-hidden relative">
+    <div className="h-[100dvh] w-full bg-white flex flex-col overflow-hidden relative font-sans text-slate-800">
       {/* Progress bar */}
-      <div className="absolute top-0 left-0 w-full h-1 bg-muted">
+      <div className="absolute top-0 left-0 w-full h-1 bg-gray-100 z-50">
         <motion.div 
-          className="h-full bg-primary" 
+          className="h-full bg-slate-800" 
           initial={{ width: 0 }} 
           animate={{ width: `${progress}%` }} 
-          transition={{ duration: 0.3 }} 
+          transition={{ duration: 0.5, ease: "easeInOut" }} 
         />
       </div>
 
-      {/* Main Content Area */}
-      <main className="flex-1 flex flex-col items-center justify-center p-6 sm:p-12 md:p-24 relative max-w-4xl mx-auto w-full">
+      <main className="flex-1 flex flex-col items-center justify-center w-full max-w-3xl mx-auto px-6 sm:px-12 relative h-full">
         <AnimatePresence mode="wait">
           {currentIndex === -1 ? (
             <motion.div
               key="welcome"
-              initial={{ opacity: 0, y: 50 }}
+              initial={{ opacity: 0, y: 60 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -50 }}
-              transition={{ duration: 0.4, ease: "easeOut" }}
-              className="w-full text-center sm:text-left"
+              exit={{ opacity: 0, y: -60 }}
+              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+              className="w-full text-left flex flex-col justify-center h-full pt-10 pb-32"
             >
-              <h1 className="text-4xl sm:text-5xl md:text-6xl font-light text-foreground mb-6 leading-tight">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-normal text-slate-900 mb-6 leading-tight">
                 {form.title}
               </h1>
               {form.description && (
-                <p className="text-xl sm:text-2xl text-muted-foreground font-light mb-12 max-w-2xl">
+                <p className="text-xl sm:text-2xl text-slate-500 font-light mb-12">
                   {form.description}
                 </p>
               )}
-              <button
-                onClick={handleNext}
-                className="px-8 py-4 bg-primary text-primary-foreground rounded-lg text-xl font-medium hover:bg-primary/90 transition-colors shadow-lg active:scale-95"
-              >
-                Start
-              </button>
-              <div className="mt-4 text-sm text-muted-foreground flex items-center justify-center sm:justify-start gap-1">
-                press <span className="font-semibold bg-muted px-2 py-0.5 rounded">Enter ↵</span>
+              <div className="flex items-center gap-4 mt-4">
+                <button
+                  onClick={handleNext}
+                  className="px-6 py-3 bg-slate-800 text-white rounded text-xl font-medium hover:bg-slate-700 transition-colors active:scale-95 flex items-center gap-2"
+                >
+                  Start
+                </button>
+                <div className="text-sm text-slate-400 flex items-center gap-1 font-medium">
+                  press <span className="font-bold">Enter ↵</span>
+                </div>
               </div>
             </motion.div>
           ) : (
             <motion.div
               key={`q-${currentIndex}`}
-              initial={{ opacity: 0, y: 50 }}
+              initial={{ opacity: 0, y: 60 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -50 }}
-              transition={{ duration: 0.4, ease: "easeOut" }}
-              className="w-full"
+              exit={{ opacity: 0, y: -60 }}
+              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+              className="w-full h-full flex flex-col justify-center pt-10 pb-32"
             >
               <QuestionDisplay 
                 question={form.questions[currentIndex]} 
@@ -177,39 +175,28 @@ export default function PublicFormPage({
                 value={answers[form.questions[currentIndex].id] || ""}
                 onChange={(val) => handleAnswerChange(form.questions[currentIndex].id, val)}
                 onEnter={handleNext}
+                isLast={currentIndex === form.questions.length - 1}
+                isPending={submitResponse.isPending}
               />
             </motion.div>
           )}
         </AnimatePresence>
       </main>
 
-      {/* Footer Navigation */}
+      {/* Floating Bottom Nav (only on non-welcome screens) */}
       {currentIndex !== -1 && (
-        <div className="fixed bottom-0 left-0 w-full p-6 flex items-center justify-between pointer-events-none">
-          <div className="flex gap-2 pointer-events-auto">
-            <button
-              onClick={handlePrev}
-              className="h-10 w-10 bg-primary/10 hover:bg-primary/20 text-primary flex items-center justify-center rounded-md transition-colors"
-              aria-label="Previous question"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="m18 15-6-6-6 6"/></svg>
-            </button>
-            <button
-              onClick={handleNext}
-              className="h-10 w-10 bg-primary/10 hover:bg-primary/20 text-primary flex items-center justify-center rounded-md transition-colors"
-              aria-label="Next question"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="m6 9 6 6 6-6"/></svg>
-            </button>
-          </div>
-          
+        <div className="absolute bottom-6 right-6 flex items-center gap-2 z-50">
+          <button
+            onClick={handlePrev}
+            className="h-9 w-9 bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center rounded transition-colors"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="m18 15-6-6-6 6"/></svg>
+          </button>
           <button
             onClick={handleNext}
-            disabled={submitResponse.isPending}
-            className="pointer-events-auto px-6 py-3 bg-primary text-primary-foreground rounded-lg font-medium text-lg shadow-lg hover:bg-primary/90 transition-all active:scale-95 flex items-center gap-2 disabled:opacity-50"
+            className="h-9 w-9 bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center rounded transition-colors"
           >
-            {currentIndex === form.questions.length - 1 ? "Submit" : "OK"}
-            <span className="text-sm opacity-60 ml-1 hidden sm:inline">press Enter ↵</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="m6 9 6 6 6-6"/></svg>
           </button>
         </div>
       )}
@@ -219,26 +206,27 @@ export default function PublicFormPage({
 
 // --- Specific Input Components ---
 
-function QuestionDisplay({ question, index, value, onChange, onEnter }: { 
+function QuestionDisplay({ question, index, value, onChange, onEnter, isLast, isPending }: { 
   question: Question; 
   index: number; 
   value: string; 
   onChange: (val: string) => void;
   onEnter: () => void;
+  isLast: boolean;
+  isPending: boolean;
 }) {
   const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement>(null);
 
-  // Auto focus on mount
+  // Auto focus
   useEffect(() => {
     if (question.type === "text" || question.type === "email" || question.type === "number" || question.type === "long_text") {
-      setTimeout(() => inputRef.current?.focus(), 100);
+      setTimeout(() => inputRef.current?.focus(), 150);
     }
   }, [question.id, question.type]);
 
-  // Global key listener for choices shortcuts (A, B, C...)
+  // Keyboard shortcuts for choices
   useEffect(() => {
     const handleChoiceKey = (e: KeyboardEvent) => {
-      // Don't intercept if inside input
       if (document.activeElement?.tagName === "INPUT" || document.activeElement?.tagName === "TEXTAREA") return;
       
       const key = e.key.toUpperCase();
@@ -246,23 +234,15 @@ function QuestionDisplay({ question, index, value, onChange, onEnter }: {
       if (question.type === "multiple_choice" || question.type === "dropdown") {
         const choices = (question.settings as any)?.choices || ["Option 1", "Option 2", "Option 3"];
         const charCode = key.charCodeAt(0);
-        if (charCode >= 65 && charCode < 65 + choices.length) { // A, B, C...
-          const selectedChoice = choices[charCode - 65];
-          onChange(selectedChoice);
-          // Small delay then next
-          setTimeout(onEnter, 300);
+        if (charCode >= 65 && charCode < 65 + choices.length) {
+          onChange(choices[charCode - 65]);
+          setTimeout(onEnter, 400); // slight delay to show selection
         }
       }
       
       if (question.type === "yes_no") {
-        if (key === "Y") {
-          onChange("Yes");
-          setTimeout(onEnter, 300);
-        }
-        if (key === "N") {
-          onChange("No");
-          setTimeout(onEnter, 300);
-        }
+        if (key === "Y") { onChange("Yes"); setTimeout(onEnter, 400); }
+        if (key === "N") { onChange("No"); setTimeout(onEnter, 400); }
       }
       
       if (question.type === "rating") {
@@ -270,7 +250,7 @@ function QuestionDisplay({ question, index, value, onChange, onEnter }: {
         const num = parseInt(key, 10);
         if (num >= 1 && num <= max) {
           onChange(num.toString());
-          setTimeout(onEnter, 300);
+          setTimeout(onEnter, 400);
         }
       }
     };
@@ -279,26 +259,81 @@ function QuestionDisplay({ question, index, value, onChange, onEnter }: {
     return () => window.removeEventListener("keydown", handleChoiceKey);
   }, [question, onChange, onEnter]);
 
+  // Check if we should show the OK button (show if there's a value, or if it's not required)
+  // For multiple choice / rating, usually clicking it auto-advances, but we show OK anyway.
+  const hasValue = value.trim().length > 0;
+  const showOk = hasValue || !question.required;
+  const requiresOkButton = ["text", "long_text", "email", "number"].includes(question.type);
+
   return (
-    <div>
-      <div className="flex items-start gap-4 mb-4">
-        <span className="text-2xl sm:text-3xl text-primary flex items-center font-light select-none">
-          {index + 1}<span className="text-primary/50 ml-1 mr-2">→</span>
-        </span>
-        <h2 className="text-3xl sm:text-4xl md:text-5xl font-light text-foreground leading-tight">
+    <div className="flex flex-col w-full">
+      {/* Title block with fixed-width number for perfect alignment */}
+      <div className="flex items-start mb-2">
+        <div className="flex items-center text-xl sm:text-2xl text-slate-800 font-normal shrink-0 mr-3 mt-1">
+          {index + 1}<span className="ml-1 text-slate-400">→</span>
+        </div>
+        <h2 className="text-2xl sm:text-3xl md:text-4xl font-normal text-slate-900 leading-snug">
           {question.title}
-          {question.required && <span className="text-destructive ml-3 text-2xl">*</span>}
+          {question.required && <span className="text-red-500 ml-2 text-2xl">*</span>}
         </h2>
       </div>
 
       {question.description && (
-        <p className="text-xl text-muted-foreground font-light mb-8 ml-12 sm:ml-16">
+        <p className="text-lg sm:text-xl text-slate-500 font-light mb-8 ml-[42px] sm:ml-[48px]">
           {question.description}
         </p>
       )}
 
-      <div className="mt-8 ml-12 sm:ml-16">
+      {/* Input area */}
+      <div className={`ml-[42px] sm:ml-[48px] ${question.description ? 'mt-4' : 'mt-10'}`}>
         {renderInput(question, value, onChange, inputRef)}
+
+        {/* The Typeform OK Button */}
+        {requiresOkButton && (
+          <div className="mt-8">
+            <AnimatePresence>
+              {showOk && (
+                <motion.div 
+                  initial={{ opacity: 0, y: 10 }} 
+                  animate={{ opacity: 1, y: 0 }} 
+                  exit={{ opacity: 0, y: 10 }}
+                  className="flex items-center gap-4"
+                >
+                  <button
+                    onClick={onEnter}
+                    disabled={isPending}
+                    className="px-6 py-2.5 bg-slate-800 text-white rounded text-xl font-medium hover:bg-slate-700 transition-colors shadow-md active:scale-95 disabled:opacity-50 flex items-center gap-2"
+                  >
+                    {isLast ? "Submit" : "OK"}
+                    {!isLast && <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5"/></svg>}
+                  </button>
+                  <span className="text-xs text-slate-400 font-medium flex items-center gap-1">
+                    press <span className="font-bold">Enter ↵</span>
+                  </span>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        )}
+
+        {/* Submit button for non-text inputs (choices auto advance usually, but need submit on last) */}
+        {!requiresOkButton && isLast && (
+           <div className="mt-8">
+             <AnimatePresence>
+               {showOk && (
+                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-4">
+                   <button
+                     onClick={onEnter}
+                     disabled={isPending}
+                     className="px-6 py-2.5 bg-slate-800 text-white rounded text-xl font-medium hover:bg-slate-700 transition-colors shadow-md active:scale-95"
+                   >
+                     Submit
+                   </button>
+                 </motion.div>
+               )}
+             </AnimatePresence>
+           </div>
+        )}
       </div>
     </div>
   );
@@ -320,7 +355,7 @@ function renderInput(
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder="Type your answer here..."
-          className="w-full text-2xl sm:text-4xl font-light text-primary bg-transparent outline-none placeholder:text-muted-foreground/30 border-b border-primary/20 focus:border-primary pb-2 transition-colors"
+          className="w-full text-2xl sm:text-3xl font-light text-slate-800 bg-transparent outline-none placeholder:text-slate-300 border-b-2 border-slate-200 focus:border-slate-800 pb-2 transition-colors"
         />
       );
     case "number":
@@ -331,7 +366,7 @@ function renderInput(
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder="0"
-          className="w-full text-2xl sm:text-4xl font-light text-primary bg-transparent outline-none placeholder:text-muted-foreground/30 border-b border-primary/20 focus:border-primary pb-2 transition-colors"
+          className="w-full text-2xl sm:text-3xl font-light text-slate-800 bg-transparent outline-none placeholder:text-slate-300 border-b-2 border-slate-200 focus:border-slate-800 pb-2 transition-colors"
         />
       );
     case "long_text":
@@ -341,33 +376,43 @@ function renderInput(
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder="Type your answer here..."
-          rows={3}
-          className="w-full text-2xl sm:text-3xl font-light text-primary bg-transparent outline-none placeholder:text-muted-foreground/30 border-b border-primary/20 focus:border-primary pb-2 resize-none transition-colors"
+          rows={1}
+          onInput={(e) => {
+            const target = e.target as HTMLTextAreaElement;
+            target.style.height = 'auto';
+            target.style.height = target.scrollHeight + 'px';
+          }}
+          className="w-full text-2xl sm:text-3xl font-light text-slate-800 bg-transparent outline-none placeholder:text-slate-300 border-b-2 border-slate-200 focus:border-slate-800 pb-2 resize-none transition-colors overflow-hidden"
         />
       );
     case "multiple_choice":
     case "dropdown": {
       const choices = (question.settings as any)?.choices || ["Option 1", "Option 2", "Option 3"];
       return (
-        <div className="space-y-3">
+        <div className="space-y-2 w-full max-w-lg">
           {choices.map((choice: string, i: number) => {
             const isSelected = value === choice;
             return (
               <button
                 key={i}
                 onClick={() => onChange(choice)}
-                className={`w-full text-left flex items-center gap-4 px-6 py-4 rounded-xl border transition-all cursor-pointer ${
+                className={`w-full text-left flex items-center gap-3 p-2 rounded-lg border transition-all cursor-pointer group ${
                   isSelected 
-                    ? "bg-primary/10 border-primary text-primary shadow-sm" 
-                    : "border-primary/20 hover:bg-primary/5 text-foreground"
+                    ? "bg-slate-100/80 border-slate-400" 
+                    : "bg-slate-50/50 border-slate-200/60 hover:bg-slate-100 hover:border-slate-300"
                 }`}
               >
-                <div className={`h-8 w-8 rounded-md border flex items-center justify-center text-sm font-semibold transition-colors ${
-                  isSelected ? "border-primary bg-primary text-primary-foreground" : "border-primary/30 text-primary/70 bg-primary/5"
+                <div className={`h-7 w-7 rounded flex items-center justify-center text-xs font-bold border transition-colors shrink-0 ${
+                  isSelected ? "border-slate-800 bg-slate-800 text-white" : "border-slate-300 bg-white text-slate-600 group-hover:border-slate-400 group-hover:bg-slate-50"
                 }`}>
                   {String.fromCharCode(65 + i)}
                 </div>
-                <span className="text-2xl font-light">{choice}</span>
+                <span className={`text-xl font-normal flex-1 transition-colors ${isSelected ? "text-slate-900" : "text-slate-700"}`}>
+                  {choice}
+                </span>
+                {isSelected && (
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-slate-800 mr-2 shrink-0"><path d="M20 6 9 17l-5-5"/></svg>
+                )}
               </button>
             );
           })}
@@ -376,7 +421,7 @@ function renderInput(
     }
     case "yes_no":
       return (
-        <div className="flex flex-col sm:flex-row gap-4">
+        <div className="flex flex-col gap-2 w-full max-w-xs">
           {["Yes", "No"].map((opt) => {
             const isSelected = value === opt;
             const key = opt === "Yes" ? "Y" : "N";
@@ -384,18 +429,23 @@ function renderInput(
               <button
                 key={opt}
                 onClick={() => onChange(opt)}
-                className={`flex-1 flex items-center justify-center gap-4 py-6 rounded-xl border transition-all text-2xl font-light cursor-pointer ${
+                className={`w-full text-left flex items-center gap-3 p-3 rounded-lg border transition-all cursor-pointer group ${
                   isSelected 
-                    ? "bg-primary/10 border-primary text-primary shadow-sm" 
-                    : "border-primary/20 hover:bg-primary/5 text-foreground"
+                    ? "bg-slate-100/80 border-slate-400" 
+                    : "bg-slate-50/50 border-slate-200/60 hover:bg-slate-100 hover:border-slate-300"
                 }`}
               >
-                <div className={`h-7 w-7 rounded-md border flex items-center justify-center text-xs font-semibold transition-colors ${
-                  isSelected ? "border-primary bg-primary text-primary-foreground" : "border-primary/30 text-primary/70 bg-primary/5"
+                <div className={`h-7 w-7 rounded flex items-center justify-center text-xs font-bold border transition-colors shrink-0 ${
+                  isSelected ? "border-slate-800 bg-slate-800 text-white" : "border-slate-300 bg-white text-slate-600 group-hover:border-slate-400 group-hover:bg-slate-50"
                 }`}>
                   {key}
                 </div>
-                {opt}
+                <span className={`text-xl font-normal flex-1 transition-colors ${isSelected ? "text-slate-900" : "text-slate-700"}`}>
+                  {opt}
+                </span>
+                {isSelected && (
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-slate-800 mr-2 shrink-0"><path d="M20 6 9 17l-5-5"/></svg>
+                )}
               </button>
             );
           })}
@@ -404,7 +454,7 @@ function renderInput(
     case "rating": {
       const max = (question.settings as any)?.max || 5;
       return (
-        <div className="flex flex-wrap gap-4">
+        <div className="flex flex-wrap gap-2">
           {Array.from({ length: max }, (_, i) => {
             const num = (i + 1).toString();
             const isSelected = value === num;
@@ -412,10 +462,10 @@ function renderInput(
               <button
                 key={num}
                 onClick={() => onChange(num)}
-                className={`h-16 w-14 rounded-xl border transition-all flex items-center justify-center text-2xl font-light cursor-pointer ${
+                className={`h-14 w-12 rounded border transition-all flex items-center justify-center text-xl font-normal cursor-pointer ${
                   isSelected 
-                    ? "bg-primary text-primary-foreground border-primary scale-110 shadow-md" 
-                    : "border-primary/20 hover:bg-primary/5 hover:scale-105"
+                    ? "bg-slate-800 text-white border-slate-800 shadow-sm" 
+                    : "bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100 hover:border-slate-300"
                 }`}
               >
                 {num}

@@ -7,6 +7,21 @@ import { useForms } from "@/hooks/useForms";
 import { FormCard } from "@/components/dashboard/form-card";
 import { FormGridSkeleton } from "@/components/dashboard/form-card-skeleton";
 import { CreateFormDialog } from "@/components/dashboard/create-form-dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 type ViewMode = "list" | "grid";
 
@@ -23,6 +38,26 @@ export default function DashboardPage() {
       form.title.toLowerCase().includes(search.toLowerCase())
     );
   }, [forms, search]);
+
+  const [workspaceName, setWorkspaceName] = useState("My workspace");
+  const [showRenameDialog, setShowRenameDialog] = useState(false);
+  const [newWorkspaceName, setNewWorkspaceName] = useState(workspaceName);
+
+  const handleRenameWorkspace = () => {
+    if (newWorkspaceName.trim()) {
+      setWorkspaceName(newWorkspaceName.trim());
+      setShowRenameDialog(false);
+      toast.success("Workspace renamed");
+    }
+  };
+
+  const handleLeaveWorkspace = () => {
+    toast.error("You cannot leave your default workspace.");
+  };
+
+  const handleDeleteWorkspace = () => {
+    toast.error("You cannot delete your default workspace.");
+  };
 
   return (
     <div className="flex flex-col h-full bg-white">
@@ -48,14 +83,26 @@ export default function DashboardPage() {
         {/* Workspace Header */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-normal text-slate-900">My workspace</h1>
-            <button className="text-slate-400 hover:text-slate-800">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
-            </button>
-            <button className="flex items-center gap-1.5 text-sm font-medium text-slate-600 hover:text-slate-900 ml-2">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
-              Invite
-            </button>
+            <h1 className="text-2xl font-normal text-slate-900">{workspaceName}</h1>
+            <DropdownMenu>
+              <DropdownMenuTrigger className="h-8 w-8 rounded flex items-center justify-center text-slate-400 hover:text-slate-800 hover:bg-slate-100 transition-colors outline-none cursor-pointer">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-40">
+                <DropdownMenuItem onClick={() => {
+                  setNewWorkspaceName(workspaceName);
+                  setShowRenameDialog(true);
+                }} className="cursor-pointer">
+                  Rename
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleLeaveWorkspace} className="cursor-pointer">
+                  Leave
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleDeleteWorkspace} className="text-destructive focus:text-destructive cursor-pointer">
+                  Delete
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
 
           <div className="flex items-center gap-4">
@@ -149,6 +196,37 @@ export default function DashboardPage() {
           </AnimatePresence>
         )}
       </div>
+
+      {/* Rename Workspace Dialog */}
+      <Dialog open={showRenameDialog} onOpenChange={setShowRenameDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Rename workspace</DialogTitle>
+          </DialogHeader>
+          <div className="py-4">
+            <Input
+              value={newWorkspaceName}
+              onChange={(e) => setNewWorkspaceName(e.target.value)}
+              placeholder="Workspace name"
+              autoFocus
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  handleRenameWorkspace();
+                }
+              }}
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowRenameDialog(false)} className="cursor-pointer">
+              Cancel
+            </Button>
+            <Button onClick={handleRenameWorkspace} className="cursor-pointer">
+              Save
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

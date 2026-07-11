@@ -4,7 +4,7 @@ A full-stack Typeform clone featuring a clean, responsive form builder, a dynami
 
 **Live Demo**: [https://vercel.com/keerti-s-projects1/typeform](https://vercel.com/keerti-s-projects1/typeform)
 
----
+
 
 ## Tech Stack Used
 
@@ -13,7 +13,7 @@ This project is separated into a decoupled frontend and backend.
 1.  **Frontend**: Next.js (App Router), React, Tailwind CSS, Framer Motion (for animations), and Lucide (for icons).
 2.  **Backend**: FastAPI (Python), SQLAlchemy (ORM), Pydantic (validation), and SQLite (Database).
 
----
+
 
 ## Architecture Overview
 
@@ -25,7 +25,7 @@ The application follows a modern decoupled architecture:
 
 Because they are decoupled, **they must be deployed separately and linked via Environment Variables**.
 
----
+
 
 ## Setup Instructions
 
@@ -69,7 +69,7 @@ npm run dev
 ```
 *The Web App will be available at `http://localhost:3000`*
 
----
+
 
 ## Database Schema
 
@@ -80,7 +80,7 @@ The backend uses SQLite with SQLAlchemy. The core schema consists of four main t
 3.  **`responses`**: Tracks when a user completes a form (`id`, `form_id`, `submitted_at`).
 4.  **`answers`**: Stores individual answers linked to a specific response and question (`id`, `response_id`, `question_id`, `value`).
 
----
+
 
 ## API Overview
 
@@ -102,10 +102,5 @@ The FastAPI backend exposes several REST endpoints to handle the core functional
     *   `POST /api/responses` - Submit a completed form with all answers.
     *   `GET /api/responses/form/{form_id}/summary` - Fetch analytics and collected responses for the dashboard grid.
 
----
 
-## Assumptions Made
 
-*   **Authentication**: As per project requirements, authentication was removed to provide a frictionless experience. The app assumes a default workspace for the creator, and public forms require no login to fill out.
-*   **UI Focus**: Heavy emphasis was placed on matching Typeform's distinct visual style, including typography, spacing, subtle border colors, and layout structure.
-*   **Mocked Features**: Advanced enterprise features (Integrations, Brand Kit, File Uploads, AI Generation) were visually removed or mocked to maintain focus on core form-building and data-collection requirements.

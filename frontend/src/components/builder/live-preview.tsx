@@ -50,29 +50,26 @@ export function LivePreview({ questions, formTitle }: LivePreviewProps) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.25 }}
-            className="w-full max-w-xs"
+            className="w-full max-w-md"
           >
-            {/* Question number */}
-            <div className="flex items-center gap-2 mb-3">
-              <span className="text-xs font-bold text-violet-600 bg-violet-100 dark:bg-violet-900/40 dark:text-violet-300 rounded-md px-2 py-0.5">
-                {currentIndex + 1}
-              </span>
-              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-muted-foreground"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-            </div>
-
             {/* Question title */}
-            <h2 className="text-lg font-semibold mb-1">
-              {question.title}
-              {question.required && <span className="text-destructive ml-1">*</span>}
-            </h2>
+            <div className="flex items-start gap-3 mb-2">
+              <span className="text-2xl font-light text-primary mt-0.5 select-none flex items-center">
+                {currentIndex + 1}<span className="text-primary/50 ml-1">→</span>
+              </span>
+              <h2 className="text-2xl font-light text-foreground mb-1 leading-snug">
+                {question.title || "Your question here..."}
+                {question.required && <span className="text-destructive ml-2">*</span>}
+              </h2>
+            </div>
 
             {/* Description */}
             {question.description && (
-              <p className="text-sm text-muted-foreground mb-4">{question.description}</p>
+              <p className="text-lg text-muted-foreground mb-6 ml-9 font-light">{question.description}</p>
             )}
 
             {/* Input preview based on type */}
-            <div className="mt-4">
+            <div className="mt-8 ml-9">
               {renderInputPreview(question, config?.type || question.type)}
             </div>
           </motion.div>
@@ -101,43 +98,33 @@ export function LivePreview({ questions, formTitle }: LivePreviewProps) {
 function renderInputPreview(question: Question, type: string) {
   switch (type) {
     case "text":
+    case "email":
+    case "number":
       return (
-        <div className="border-b-2 border-muted-foreground/20 pb-2">
-          <span className="text-sm text-muted-foreground/50">Type your answer here...</span>
+        <div className="border-b-2 border-primary/20 pb-2">
+          <span className="text-2xl font-light text-muted-foreground/30">Type your answer here...</span>
         </div>
       );
     case "long_text":
       return (
-        <div className="border border-border/60 rounded-xl p-3 min-h-[80px]">
-          <span className="text-sm text-muted-foreground/50">Type your answer here...</span>
-        </div>
-      );
-    case "email":
-      return (
-        <div className="border-b-2 border-muted-foreground/20 pb-2">
-          <span className="text-sm text-muted-foreground/50">name@example.com</span>
-        </div>
-      );
-    case "number":
-      return (
-        <div className="border-b-2 border-muted-foreground/20 pb-2">
-          <span className="text-sm text-muted-foreground/50">0</span>
+        <div className="border-b-2 border-primary/20 pb-8 pt-2">
+          <span className="text-2xl font-light text-muted-foreground/30">Type your answer here...</span>
         </div>
       );
     case "multiple_choice":
     case "dropdown": {
-      const choices = (question.settings?.choices as string[]) || ["Option 1", "Option 2", "Option 3"];
+      const choices = (question.settings as any)?.choices || ["Option 1", "Option 2", "Option 3"];
       return (
-        <div className="space-y-2">
-          {choices.map((choice, i) => (
+        <div className="space-y-3">
+          {choices.map((choice: string, i: number) => (
             <div
               key={i}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-xl border border-border/60 hover:border-violet-400 hover:bg-violet-50 dark:hover:bg-violet-900/10 transition-all cursor-pointer"
+              className="flex items-center gap-4 px-4 py-3 rounded-lg border border-primary/20 hover:bg-primary/5 transition-all cursor-pointer"
             >
-              <span className="h-5 w-5 rounded-full border-2 border-muted-foreground/30 flex items-center justify-center text-xs font-semibold text-muted-foreground">
+              <div className="h-7 w-7 rounded-md border border-primary/30 flex items-center justify-center text-sm font-semibold text-primary/70 bg-primary/5">
                 {String.fromCharCode(65 + i)}
-              </span>
-              <span className="text-sm">{choice}</span>
+              </div>
+              <span className="text-xl font-light">{choice}</span>
             </div>
           ))}
         </div>
@@ -145,23 +132,25 @@ function renderInputPreview(question: Question, type: string) {
     }
     case "yes_no":
       return (
-        <div className="flex gap-3">
-          <button className="flex-1 py-3 rounded-xl border border-border/60 hover:border-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/10 transition-all text-sm font-medium cursor-pointer">
+        <div className="flex gap-4">
+          <button className="flex-1 py-4 rounded-lg border border-primary/20 hover:bg-primary/5 transition-all text-xl font-light cursor-pointer flex items-center justify-center gap-3">
+            <span className="h-6 w-6 rounded-md border border-primary/30 flex items-center justify-center text-xs font-semibold text-primary/70 bg-primary/5">Y</span>
             Yes
           </button>
-          <button className="flex-1 py-3 rounded-xl border border-border/60 hover:border-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/10 transition-all text-sm font-medium cursor-pointer">
+          <button className="flex-1 py-4 rounded-lg border border-primary/20 hover:bg-primary/5 transition-all text-xl font-light cursor-pointer flex items-center justify-center gap-3">
+            <span className="h-6 w-6 rounded-md border border-primary/30 flex items-center justify-center text-xs font-semibold text-primary/70 bg-primary/5">N</span>
             No
           </button>
         </div>
       );
     case "rating": {
-      const max = (question.settings?.max as number) || 5;
+      const max = (question.settings as any)?.max || 5;
       return (
-        <div className="flex gap-2 justify-center">
+        <div className="flex flex-wrap gap-3">
           {Array.from({ length: max }, (_, i) => (
             <button
               key={i}
-              className="h-10 w-10 rounded-xl border border-border/60 hover:border-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/10 transition-all flex items-center justify-center text-sm font-semibold cursor-pointer hover:scale-110"
+              className="h-14 w-12 rounded-lg border border-primary/20 hover:bg-primary/5 transition-all flex items-center justify-center text-xl font-light cursor-pointer"
             >
               {i + 1}
             </button>
@@ -171,8 +160,8 @@ function renderInputPreview(question: Question, type: string) {
     }
     default:
       return (
-        <div className="border-b-2 border-muted-foreground/20 pb-2">
-          <span className="text-sm text-muted-foreground/50">Type your answer here...</span>
+        <div className="border-b-2 border-primary/20 pb-2">
+          <span className="text-2xl font-light text-muted-foreground/30">Type your answer here...</span>
         </div>
       );
   }

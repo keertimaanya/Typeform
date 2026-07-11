@@ -35,15 +35,15 @@ export function BuilderSidebar({ formId }: BuilderSidebarProps) {
   };
 
   return (
-    <aside className="w-64 border-r border-border/60 bg-muted/30 flex flex-col h-full overflow-hidden">
+    <aside className="w-64 bg-[#191919] text-white flex flex-col h-full overflow-hidden shrink-0">
       {/* Header */}
-      <div className="p-4 border-b border-border/40">
-        <h2 className="text-sm font-semibold text-foreground">Question Types</h2>
-        <p className="text-xs text-muted-foreground mt-0.5">Click to add to form</p>
+      <div className="p-5 border-b border-white/10">
+        <h2 className="text-sm font-semibold text-white/90">Question Types</h2>
+        <p className="text-xs text-white/50 mt-1">Click to add to form</p>
       </div>
 
       {/* Question type list */}
-      <div className="flex-1 overflow-y-auto p-3 space-y-1.5">
+      <div className="flex-1 overflow-y-auto p-4 space-y-2">
         {QUESTION_TYPES.map((qt, index) => (
           <motion.button
             key={qt.type}
@@ -52,9 +52,9 @@ export function BuilderSidebar({ formId }: BuilderSidebarProps) {
             transition={{ delay: index * 0.04 }}
             onClick={() => handleAddQuestion(qt.type)}
             disabled={addQuestion.isPending}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-left transition-all duration-150 hover:bg-background hover:shadow-sm border border-transparent hover:border-border/60 group cursor-pointer disabled:opacity-50"
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-left transition-all duration-150 hover:bg-white/10 group cursor-pointer disabled:opacity-50"
           >
-            <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-violet-100 to-fuchsia-100 dark:from-violet-900/30 dark:to-fuchsia-900/30 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+            <div className="h-7 w-7 rounded-md bg-white/5 flex items-center justify-center shrink-0 group-hover:bg-white/20 transition-colors">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="14"
@@ -65,12 +65,12 @@ export function BuilderSidebar({ formId }: BuilderSidebarProps) {
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="text-violet-600 dark:text-violet-400"
+                className="text-white/70 group-hover:text-white transition-colors"
               >
                 <path d={qt.icon} />
               </svg>
             </div>
-            <span className="font-medium text-muted-foreground group-hover:text-foreground transition-colors">
+            <span className="font-medium text-white/70 group-hover:text-white transition-colors">
               {qt.label}
             </span>
           </motion.button>

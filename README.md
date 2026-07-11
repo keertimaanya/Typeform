@@ -1,109 +1,121 @@
 # Typeform Clone
 
-A full-stack Typeform clone for creating forms, collecting responses, and viewing analytics.
+A full-stack Typeform clone featuring a powerful drag-and-drop builder, a dynamic respondent flow, and real-time analytics. Built with Next.js (App Router), React, Tailwind CSS, Framer Motion, FastAPI, and SQLite.
 
-## Tech Stack
+---
 
-| Layer | Technology |
-|-------|------------|
-| Frontend | Next.js 15, TypeScript, TailwindCSS, shadcn/ui, Framer Motion, dnd-kit |
-| Backend | FastAPI, SQLAlchemy, Alembic, Pydantic |
-| Database | SQLite |
+## 🏗️ Architecture Overview
 
-## Project Structure
+This project is separated into two decoupled applications to allow for independent scaling and modern deployment strategies:
 
-```
-Typeform/
-├── frontend/          # Next.js 15 App (coming soon)
-└── backend/           # FastAPI REST API
-    ├── app/
-    │   ├── main.py        # App entry point
-    │   ├── config.py      # Environment settings
-    │   ├── database.py    # SQLAlchemy setup
-    │   ├── models/        # ORM models (Form, Question, Response, Answer)
-    │   ├── schemas/       # Pydantic validation schemas
-    │   ├── crud/          # Database operations
-    │   ├── services/      # Business logic
-    │   ├── api/           # REST API routes
-    │   └── seed.py        # Sample data seeder
-    ├── alembic/           # Database migrations
-    ├── requirements.txt
-    └── .env
-```
+1. **Frontend (`/frontend`)**: A Next.js application that serves the UI, forms, and builder. Uses React Query for state management and Tailwind CSS for styling.
+2. **Backend (`/backend`)**: A FastAPI Python server that handles the database, business logic, and API endpoints. Uses SQLAlchemy for ORM.
 
-## Backend Setup
+Because they are decoupled, **they must be deployed separately and linked via Environment Variables**.
 
-### Prerequisites
-- Python 3.11+
+---
 
-### Installation
+## 🗄️ Database Schema
 
+The backend uses SQLite with SQLAlchemy. The core schema consists of four main tables:
+
+1. **`forms`**
+   - `id`: Integer (Primary Key)
+   - `title`: String
+   - `status`: String (e.g., 'draft', 'published')
+   - `share_slug`: String (Unique, used for public URLs)
+   - `created_at`, `updated_at`: DateTime
+
+2. **`questions`**
+   - `id`: Integer (Primary Key)
+   - `form_id`: Integer (Foreign Key to `forms.id`)
+   - `title`: String
+   - `description`: String
+   - `type`: String (e.g., 'text', 'multiple_choice', 'rating')
+   - `settings`: JSON (Stores choices, rating max, etc.)
+   - `order`: Integer (For drag-and-drop sorting)
+   - `required`: Boolean
+
+3. **`responses`**
+   - `id`: Integer (Primary Key)
+   - `form_id`: Integer (Foreign Key to `forms.id`)
+   - `submitted_at`: DateTime
+
+4. **`answers`**
+   - `id`: Integer (Primary Key)
+   - `response_id`: Integer (Foreign Key to `responses.id`)
+   - `question_id`: Integer (Foreign Key to `questions.id`)
+   - `value`: String (The user's submitted answer)
+
+---
+
+## 🌱 Sample Data (Database Seeding)
+
+To make the app immediately usable and fulfill the assignment requirements, a seeding script is provided to pre-populate the database with published forms and fake responses.
+
+Run the seed script from the `backend` directory:
 ```bash
-# Navigate to backend
 cd backend
+python seed.py
+```
+This will automatically generate a "Customer Satisfaction Survey" and a "Tech Meetup Registration" form, complete with various question types and submitted responses so you can test the analytics dashboard right away.
 
-# Create virtual environment
+---
+
+## 💡 Assumptions Made
+
+- **Authentication**: As per the instructions, real creator authentication was simplified. The app assumes a default logged-in creator, and public forms require no login to fill out.
+- **Mocked Features**: Advanced features like Payment, File Upload, Logic Jumps, and Integrations are intentionally mocked in the Builder's "Add Content" menu to match the Typeform UI feel without expanding the scope beyond the core requirements.
+- **Deployment**: The database uses SQLite for simplicity, which works best locally or on persistent disk setups (like Railway Volumes).
+
+---
+
+## 💻 Local Development Setup
+
+If you want to run the project locally on your machine:
+
+**1. Start the Backend:**
+```bash
+cd backend
 python -m venv venv
-
-# Activate virtual environment
-# Windows:
-venv\Scripts\activate
-# macOS/Linux:
-source venv/bin/activate
-
-# Install dependencies
+source venv/Scripts/activate # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
-```
-
-### Seed the Database
-
-```bash
-cd backend
-python -m app.seed
-```
-
-### Run the Server
-
-```bash
-cd backend
+python seed.py # Seed the sample data!
 uvicorn app.main:app --reload --port 8000
 ```
+*(The API will be available at `http://localhost:8000`)*
 
-### API Documentation
-- **Swagger UI**: http://localhost:8000/docs
-- **ReDoc**: http://localhost:8000/redoc
+**2. Start the Frontend:**
+```bash
+cd frontend
+npm install
+npm run dev
+```
+*(The Web App will be available at `http://localhost:3000`)*
 
-## API Endpoints
+---
 
-### Forms
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/forms` | List all forms |
-| GET | `/api/forms/{id}` | Get form with questions |
-| POST | `/api/forms` | Create a new form |
-| PUT | `/api/forms/{id}` | Update a form |
-| DELETE | `/api/forms/{id}` | Delete a form |
-| POST | `/api/forms/{id}/duplicate` | Duplicate a form |
-| POST | `/api/forms/{id}/publish` | Publish a form |
-| POST | `/api/forms/{id}/unpublish` | Unpublish a form |
+## 🚀 Deployment Guide (Production)
 
-### Questions
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/forms/{id}/questions` | Add a question |
-| PUT | `/api/questions/{id}` | Update a question |
-| DELETE | `/api/questions/{id}` | Delete a question |
-| PUT | `/api/forms/{id}/questions/reorder` | Reorder questions |
+To deploy this project to the public internet, we will use **Vercel** for the Frontend and **Railway** for the Backend.
 
-### Public (Respondent)
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/public/{slug}` | Get form by share link |
-| POST | `/api/public/{slug}/submit` | Submit a response |
+### Step 1: Deploy the Backend (Railway)
+1. Create a free account at [Railway.app](https://railway.app/).
+2. Create a **New Project** -> **Deploy from GitHub repo**.
+3. Add a **Root Directory** setting if Railway doesn't automatically detect the `/backend` folder. Go to Settings -> Build -> Root Directory -> type `/backend`.
+4. **Set up Persistent Storage (SQLite)**:
+   - In Railway, go to the **Volumes** tab and click **Add Volume**.
+   - Set the Mount Path to `/data`.
+5. **Configure Environment Variables**:
+   - `DATABASE_URL`: `sqlite:////data/typeform.db`
+   - `CORS_ORIGINS`: `*` 
+6. Click **Deploy**. Copy the public URL Railway gives you.
 
-### Responses & Analytics
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/forms/{id}/responses` | List all responses |
-| GET | `/api/responses/{id}` | Get single response |
-| GET | `/api/forms/{id}/responses/summary` | Get analytics summary |
+### Step 2: Deploy the Frontend (Vercel)
+1. Create a free account at [Vercel.com](https://vercel.com/).
+2. Click **Add New Project** and import this GitHub repository.
+3. In the "Configure Project" step:
+   - **Root Directory**: Click Edit and select `/frontend`.
+4. **Configure Environment Variables**:
+   - `NEXT_PUBLIC_API_URL`: Paste your Railway Backend URL with `/api` at the end (e.g., `https://backend-production.up.railway.app/api`).
+5. Click **Deploy**.

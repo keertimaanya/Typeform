@@ -2,11 +2,12 @@
 
 A full-stack Typeform clone featuring a clean, responsive form builder, a dynamic respondent flow, and real-time form analytics. Built with modern web technologies and a focus on delivering a seamless user experience.
 
+**Live Demo**: [https://vercel.com/keerti-s-projects1/typeform](https://vercel.com/keerti-s-projects1/typeform)
+
 ---
 
-## ✨ Features Implemented
+## Features Implemented
 
-*   **Landing Page**: A beautiful, animated landing page that directs users straight to the dashboard (authentication flow is intentionally bypassed for immediate access).
 *   **Workspace Dashboard**: 
     *   Create, view, and manage your forms.
     *   Toggle between **List** and **Grid** views for forms.
@@ -27,7 +28,7 @@ A full-stack Typeform clone featuring a clean, responsive form builder, a dynami
 
 ---
 
-## 🏗️ Tech Stack
+## Tech Stack
 
 This project is separated into a decoupled frontend and backend.
 
@@ -38,7 +39,7 @@ Because they are decoupled, **they must be deployed separately and linked via En
 
 ---
 
-## 💻 Local Development Setup
+## Local Development Setup
 
 If you want to run the project locally on your machine:
 
@@ -82,7 +83,7 @@ npm run dev
 
 ---
 
-## 🗄️ Database Schema
+## Database Schema
 
 The backend uses SQLite with SQLAlchemy. The core schema consists of four main tables:
 
@@ -93,7 +94,7 @@ The backend uses SQLite with SQLAlchemy. The core schema consists of four main t
 
 ---
 
-## 💡 Implementation Notes & Assumptions
+## Implementation Notes & Assumptions
 
 *   **Authentication**: As per project requirements, authentication was removed to provide a frictionless experience. The app assumes a default workspace for the creator, and public forms require no login to fill out.
 *   **UI Focus**: Heavy emphasis was placed on matching Typeform's distinct visual style, including typography, spacing, subtle border colors, and layout structure.

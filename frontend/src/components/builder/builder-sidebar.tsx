@@ -43,7 +43,11 @@ function MenuItem({ icon, label, onClick, disabled }: { icon: React.ReactNode, l
       }`}
     >
       <div className={`h-7 w-7 rounded border shadow-sm flex items-center justify-center text-muted-foreground ${!disabled && "group-hover:text-primary"} bg-background transition-colors`}>
-        {icon}
+        {typeof icon === "string" ? (
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d={icon} /></svg>
+        ) : (
+          icon
+        )}
       </div>
       <span className="text-sm font-medium">{label}</span>
       {disabled && (
@@ -110,8 +114,12 @@ function SortableNavItem({
       </div>
       
       {config && (
-        <div className="text-muted-foreground">
-          {config.icon}
+        <div className="text-muted-foreground flex items-center justify-center">
+          {typeof config.icon === "string" ? (
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d={config.icon} /></svg>
+          ) : (
+            config.icon
+          )}
         </div>
       )}
     </div>
@@ -178,90 +186,62 @@ export function BuilderSidebar({ formId, questions, activeQuestionId, setActiveQ
               </div>
 
               {/* Grid of Categories */}
-              <div className="flex-1 overflow-y-auto pr-2 grid grid-cols-4 gap-8">
+              <div className="flex-1 overflow-y-auto pr-2 grid grid-cols-2 gap-8">
                 
-                {/* Column 1: Recommended & Connect */}
+                {/* Column 1: Text & Contact */}
                 <div className="space-y-6">
                   <div>
-                    <h4 className="text-sm font-semibold text-foreground mb-3">Recommended</h4>
+                    <h4 className="text-sm font-semibold text-foreground mb-3">Text & Contact</h4>
                     <div className="space-y-1">
-                      <MenuItem icon={<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M10 8v8l6-4-6-4Z"/></svg>} label="Video and Audio" disabled />
+                      <MenuItem 
+                        icon={getQuestionTypeConfig("text")?.icon} 
+                        label="Short Text" 
+                        onClick={() => handleAddQuestion("text")} 
+                      />
+                      <MenuItem 
+                        icon={getQuestionTypeConfig("long_text")?.icon} 
+                        label="Long Text" 
+                        onClick={() => handleAddQuestion("long_text")} 
+                      />
+                      <MenuItem 
+                        icon={getQuestionTypeConfig("email")?.icon} 
+                        label="Email" 
+                        onClick={() => handleAddQuestion("email")} 
+                      />
+                      <MenuItem 
+                        icon={getQuestionTypeConfig("number")?.icon} 
+                        label="Number" 
+                        onClick={() => handleAddQuestion("number")} 
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Column 2: Choice & Rating */}
+                <div className="space-y-6">
+                  <div>
+                    <h4 className="text-sm font-semibold text-foreground mb-3">Choice & Rating</h4>
+                    <div className="space-y-1">
                       <MenuItem 
                         icon={getQuestionTypeConfig("multiple_choice")?.icon} 
                         label="Multiple Choice" 
                         onClick={() => handleAddQuestion("multiple_choice")} 
                       />
                       <MenuItem 
-                        icon={getQuestionTypeConfig("text")?.icon} 
-                        label="Short Text" 
-                        onClick={() => handleAddQuestion("text")} 
+                        icon={getQuestionTypeConfig("dropdown")?.icon} 
+                        label="Dropdown" 
+                        onClick={() => handleAddQuestion("dropdown")} 
                       />
-                    </div>
-                  </div>
-                  <div>
-                    <h4 className="text-sm font-semibold text-foreground mb-3">Connect to apps</h4>
-                    <div className="space-y-1">
-                      <MenuItem icon={<div className="h-4 w-4 bg-[#ff7a59] rounded-sm" />} label="Hubspot" disabled />
-                      <MenuItem icon={<div className="h-4 w-4 bg-[#00a1e0] rounded-sm" />} label="Salesforce" disabled />
-                      <MenuItem icon={<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>} label="Browse all apps" disabled />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Column 2: Contact Info & Text */}
-                <div className="space-y-6">
-                  <div>
-                    <h4 className="text-sm font-semibold text-foreground mb-3">Contact info</h4>
-                    <div className="space-y-1">
-                      <MenuItem icon={<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>} label="Contact Info" disabled />
-                      <MenuItem icon={getQuestionTypeConfig("email")?.icon} label="Email" onClick={() => handleAddQuestion("email")} />
-                      <MenuItem icon={<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>} label="Phone Number" disabled />
-                      <MenuItem icon={<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>} label="Address" disabled />
-                      <MenuItem icon={<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>} label="Website" disabled />
-                    </div>
-                  </div>
-                  <div>
-                    <h4 className="text-sm font-semibold text-foreground mb-3">Text & Video</h4>
-                    <div className="space-y-1">
-                      <MenuItem icon={getQuestionTypeConfig("long_text")?.icon} label="Long Text" onClick={() => handleAddQuestion("long_text")} />
-                      <MenuItem icon={getQuestionTypeConfig("text")?.icon} label="Short Text" onClick={() => handleAddQuestion("text")} />
-                      <MenuItem icon={<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M10 8v8l6-4-6-4Z"/></svg>} label="Video and Audio" disabled />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Column 3: Choice & Other */}
-                <div className="space-y-6">
-                  <div>
-                    <h4 className="text-sm font-semibold text-foreground mb-3">Choice</h4>
-                    <div className="space-y-1">
-                      <MenuItem icon={getQuestionTypeConfig("multiple_choice")?.icon} label="Multiple Choice" onClick={() => handleAddQuestion("multiple_choice")} />
-                      <MenuItem icon={getQuestionTypeConfig("dropdown")?.icon} label="Dropdown" onClick={() => handleAddQuestion("dropdown")} />
-                      <MenuItem icon={<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>} label="Picture Choice" disabled />
-                      <MenuItem icon={getQuestionTypeConfig("yes_no")?.icon} label="Yes/No" onClick={() => handleAddQuestion("yes_no")} />
-                      <MenuItem icon={<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="m9 12 2 2 4-4"/></svg>} label="Checkbox" disabled />
-                    </div>
-                  </div>
-                  <div>
-                    <h4 className="text-sm font-semibold text-foreground mb-3">Other</h4>
-                    <div className="space-y-1">
-                      <MenuItem icon={getQuestionTypeConfig("number")?.icon} label="Number" onClick={() => handleAddQuestion("number")} />
-                      <MenuItem icon={<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>} label="Date" disabled />
-                      <MenuItem icon={<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21.2 8.4c.5.5.8 1.1.8 1.8V19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h10.8c.7 0 1.3.3 1.8.8l4.6 4.6z"/><path d="M14.5 2v7.5c0 .8.7 1.5 1.5 1.5H22"/><path d="M8 13h2"/><path d="M8 17h2"/><path d="M14 13h2"/></svg>} label="File Upload" disabled />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Column 4: Rating & Ranking */}
-                <div className="space-y-6">
-                  <div>
-                    <h4 className="text-sm font-semibold text-foreground mb-3">Rating & ranking</h4>
-                    <div className="space-y-1">
-                      <MenuItem icon={<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>} label="Net Promoter Score" disabled />
-                      <MenuItem icon={<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>} label="Opinion Scale" disabled />
-                      <MenuItem icon={getQuestionTypeConfig("rating")?.icon} label="Rating" onClick={() => handleAddQuestion("rating")} />
-                      <MenuItem icon={<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>} label="Ranking" disabled />
-                      <MenuItem icon={<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M9 3v18"/><path d="M15 3v18"/></svg>} label="Matrix" disabled />
+                      <MenuItem 
+                        icon={getQuestionTypeConfig("yes_no")?.icon} 
+                        label="Yes/No" 
+                        onClick={() => handleAddQuestion("yes_no")} 
+                      />
+                      <MenuItem 
+                        icon={getQuestionTypeConfig("rating")?.icon} 
+                        label="Rating" 
+                        onClick={() => handleAddQuestion("rating")} 
+                      />
                     </div>
                   </div>
                 </div>

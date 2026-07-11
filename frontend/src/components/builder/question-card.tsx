@@ -23,6 +23,7 @@ interface QuestionCardProps {
 export function QuestionCard({ question, formId, index }: QuestionCardProps) {
   const [title, setTitle] = useState(question.title);
   const [description, setDescription] = useState(question.description || "");
+  const [choices, setChoices] = useState<string[]>((question.settings as any)?.choices || ["Option 1"]);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   
   const updateQuestion = useUpdateQuestion(formId);
@@ -35,7 +36,8 @@ export function QuestionCard({ question, formId, index }: QuestionCardProps) {
   useEffect(() => {
     setTitle(question.title);
     setDescription(question.description || "");
-  }, [question.title, question.description]);
+    setChoices((question.settings as any)?.choices || ["Option 1"]);
+  }, [question.title, question.description, question.settings]);
 
   // dnd-kit sortable
   const {
@@ -214,7 +216,7 @@ export function QuestionCard({ question, formId, index }: QuestionCardProps) {
         <div className="ml-10 mt-6">
           {(question.type === "multiple_choice" || question.type === "dropdown") && (
             <div className="space-y-2">
-              {((question.settings as any)?.choices || ["Option 1"]).map((choice: string, i: number) => (
+              {choices.map((choice: string, i: number) => (
                 <div key={i} className="flex items-center gap-3">
                   <div className="h-6 w-6 rounded-md bg-muted flex items-center justify-center text-xs font-medium text-muted-foreground border border-border/50">
                     {String.fromCharCode(65 + i)}
@@ -222,16 +224,24 @@ export function QuestionCard({ question, formId, index }: QuestionCardProps) {
                   <input
                     value={choice}
                     onChange={(e) => {
-                      const newChoices = [...((question.settings as any)?.choices || [])];
+                      const newChoices = [...choices];
                       newChoices[i] = e.target.value;
-                      handleChoicesChange(newChoices);
+                      setChoices(newChoices);
+                    }}
+                    onBlur={(e) => {
+                      // Only save if it actually changed from what's in the backend
+                      const currentBackendChoice = ((question.settings as any)?.choices || [])[i];
+                      if (e.target.value !== currentBackendChoice) {
+                        handleChoicesChange(choices);
+                      }
                     }}
                     placeholder={`Option ${i + 1}`}
                     className="flex-1 text-sm bg-muted/30 border border-transparent hover:border-border focus:border-primary focus:bg-transparent rounded-md px-3 py-1.5 outline-none transition-all"
                   />
                   <button
                     onClick={() => {
-                      const newChoices = ((question.settings as any)?.choices || []).filter((_: any, idx: number) => idx !== i);
+                      const newChoices = choices.filter((_, idx) => idx !== i);
+                      setChoices(newChoices);
                       handleChoicesChange(newChoices);
                     }}
                     className="p-1.5 text-muted-foreground/50 hover:text-destructive transition-colors cursor-pointer"
@@ -242,7 +252,8 @@ export function QuestionCard({ question, formId, index }: QuestionCardProps) {
               ))}
               <button
                 onClick={() => {
-                  const newChoices = [...((question.settings as any)?.choices || []), `Option ${((question.settings as any)?.choices || []).length + 1}`];
+                  const newChoices = [...choices, `Option ${choices.length + 1}`];
+                  setChoices(newChoices);
                   handleChoicesChange(newChoices);
                 }}
                 className="text-xs font-medium text-primary hover:text-primary/80 mt-2 px-1 cursor-pointer transition-colors"

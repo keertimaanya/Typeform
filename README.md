@@ -6,40 +6,28 @@ A full-stack Typeform clone featuring a clean, responsive form builder, a dynami
 
 ---
 
-## Features Implemented
-
-*   **Workspace Dashboard**: 
-    *   Create, view, and manage your forms.
-    *   Toggle between **List** and **Grid** views for forms.
-    *   Live search functionality with bolded text highlighting.
-    *   Workspace management (rename, delete, leave).
-*   **Form Builder**:
-    *   **Add Form Elements**: Support for various input types including Short Text, Long Text, Email, Number, Multiple Choice, and Rating.
-    *   **Live Preview**: Instantly preview your form in both Desktop and Mobile views.
-    *   **Inline Editing**: Edit question titles and choices directly within the central workspace.
-    *   **Form Settings**: Configure individual question properties (e.g., marking them as required).
-*   **Form Respondent Flow**:
-    *   Public, shareable URLs for each form (`/f/[slug]`).
-    *   Smooth, step-by-step UI identical to the real Typeform experience.
-    *   Keyboard shortcuts (press Enter to proceed, A/B/C for multiple choice).
-*   **Results & Analytics**:
-    *   View collected responses in a clean table format.
-    *   See submission timestamps and individual answers.
-
----
-
-## Tech Stack
+## Tech Stack Used
 
 This project is separated into a decoupled frontend and backend.
 
-1.  **Frontend (`/frontend`)**: Next.js (App Router), React, Tailwind CSS, Framer Motion for animations, and Lucide for icons.
-2.  **Backend (`/backend`)**: FastAPI (Python), SQLAlchemy (ORM), and SQLite (Database).
+1.  **Frontend**: Next.js (App Router), React, Tailwind CSS, Framer Motion (for animations), and Lucide (for icons).
+2.  **Backend**: FastAPI (Python), SQLAlchemy (ORM), Pydantic (validation), and SQLite (Database).
+
+---
+
+## Architecture Overview
+
+The application follows a modern decoupled architecture:
+
+*   **Client (Frontend)**: Handles all user interfaces, state management (React Hooks/Context), and routing. It communicates with the backend exclusively via RESTful API calls.
+*   **Server (Backend)**: A stateless FastAPI application that exposes RESTful endpoints, handles data validation, and manages database transactions via SQLAlchemy.
+*   **Database**: SQLite is used for persistent storage, making the application lightweight and easy to deploy.
 
 Because they are decoupled, **they must be deployed separately and linked via Environment Variables**.
 
 ---
 
-## Local Development Setup
+## Setup Instructions
 
 If you want to run the project locally on your machine:
 
@@ -87,15 +75,37 @@ npm run dev
 
 The backend uses SQLite with SQLAlchemy. The core schema consists of four main tables:
 
-1.  **`forms`**: Stores form metadata (title, status, share_slug, timestamps).
-2.  **`questions`**: Stores question definitions, types, order, and JSON settings (e.g., multiple choice options).
-3.  **`responses`**: Tracks when a user completes a form.
-4.  **`answers`**: Stores individual answers linked to a specific response and question.
+1.  **`forms`**: Stores form metadata (`id`, `title`, `description`, `status`, `share_slug`, `created_at`, `updated_at`).
+2.  **`questions`**: Stores question definitions (`id`, `form_id`, `title`, `description`, `type`, `required`, `position`, `settings` as JSON).
+3.  **`responses`**: Tracks when a user completes a form (`id`, `form_id`, `submitted_at`).
+4.  **`answers`**: Stores individual answers linked to a specific response and question (`id`, `response_id`, `question_id`, `value`).
 
 ---
 
-## Implementation Notes & Assumptions
+## API Overview
+
+The FastAPI backend exposes several REST endpoints to handle the core functionality. Detailed API documentation (Swagger UI) is automatically generated and available at `/docs` when the backend is running locally.
+
+**Key Endpoints:**
+*   **Forms**:
+    *   `GET /api/forms` - Retrieve all forms for the dashboard.
+    *   `POST /api/forms` - Create a new form.
+    *   `GET /api/forms/{id}` - Get full details of a specific form (used by the builder).
+    *   `PUT /api/forms/{id}` - Update form metadata or publish status.
+    *   `GET /api/forms/slug/{slug}` - Fetch a form by its public share slug (used by respondents).
+*   **Questions**:
+    *   `POST /api/questions` - Add a new question to a form.
+    *   `PUT /api/questions/{id}` - Update a question's content or settings.
+    *   `PUT /api/questions/reorder` - Update the display order of questions.
+    *   `DELETE /api/questions/{id}` - Remove a question.
+*   **Responses**:
+    *   `POST /api/responses` - Submit a completed form with all answers.
+    *   `GET /api/responses/form/{form_id}/summary` - Fetch analytics and collected responses for the dashboard grid.
+
+---
+
+## Assumptions Made
 
 *   **Authentication**: As per project requirements, authentication was removed to provide a frictionless experience. The app assumes a default workspace for the creator, and public forms require no login to fill out.
 *   **UI Focus**: Heavy emphasis was placed on matching Typeform's distinct visual style, including typography, spacing, subtle border colors, and layout structure.
-*   **Mocked Features**: Advanced enterprise features (Integrations, Brand Kit, File Uploads) were visually removed or mocked to maintain focus on core form-building and data-collection requirements.
+*   **Mocked Features**: Advanced enterprise features (Integrations, Brand Kit, File Uploads, AI Generation) were visually removed or mocked to maintain focus on core form-building and data-collection requirements.

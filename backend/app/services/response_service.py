@@ -84,7 +84,7 @@ def get_summary(db: Session, form_id: int) -> ResponseSummary:
         answer_values = [a.value for a in answers if a.value is not None]
 
         # Build aggregated data based on question type
-        if question.type in ("multiple_choice", "yes_no"):
+        if question.type in ("multiple_choice", "dropdown", "yes_no"):
             aggregated = dict(Counter(answer_values))
         elif question.type == "rating":
             if answer_values:
